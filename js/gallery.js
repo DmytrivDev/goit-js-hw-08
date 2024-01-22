@@ -75,7 +75,7 @@ const images = [
       alt="${description}"
     />
   </a>
-</li>`).join();
+</li>`).join('');
 
 gallery.innerHTML = responsive;
 
