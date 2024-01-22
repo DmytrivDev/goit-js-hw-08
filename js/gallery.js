@@ -64,36 +64,41 @@ const images = [
     },
   ];
 
-  let responcive = '';
   const gallery = document.querySelector('.gallery');
 
-  images.map(({original, preview, description}) => responcive += `<li class="gallery-item">
+  const responsive = images.map(({original, preview, description}) => `<li class="gallery-item">
   <a class="gallery-link" href="${original}">
     <img
       class="gallery-image"
       src="${preview}"
-      data-source="large-image.jpg"
+      data-source="${original}"
       alt="${description}"
     />
   </a>
 </li>`).join();
 
-gallery.innerHTML = responcive;
+gallery.innerHTML = responsive;
 
-gallery.addEventListener("click", galleryClock);
+gallery.addEventListener("click", galleryClick);
 
-function galleryClock(e) {
+function galleryClick(e) {
     e.preventDefault();
 
     if(e.target === e.currentTarget) {
         return;
     }
 
-    const fullImage = e.target.closest('a').getAttribute("href");
+    const fullImage = e.target.dataset.source;
 
-    let instance = basicLightbox.create(`<img src="${fullImage}" class="lightboxImg"/>`)
+    let instance = basicLightbox.create(`<img src="${fullImage}" class="lightboxImg"/>`, {
+        onShow: () => {
+            document.addEventListener("keydown", closeModal);
+        },
+        onClose: () => {
+            document.removeEventListener("keydown", closeModal);
+        }
+    })
 
-    document.addEventListener("keydown", closeModal);
     instance.show();
 
     function closeModal(e) {
@@ -101,7 +106,6 @@ function galleryClock(e) {
     
         if(kayCode === 'Escape') {
             instance.close();
-            document.removeEventListener("keydown", closeModal);
         }
     }
 }
